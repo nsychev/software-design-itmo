@@ -1,0 +1,31 @@
+apply plugin: 'java'
+
+group 'ru.nsychev.sd'
+version '1.0'
+
+sourceCompatibility = '1.8'
+compileJava.options.encoding = 'UTF-8'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'io.github.zebalu:gradle-aspectj:3.0.0'
+    }
+}
+
+ext {
+    aspectjVersion = '1.8.5'
+}
+
+apply plugin: 'aspectj'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.aspectj:aspectjrt:1.8.5"
+}
