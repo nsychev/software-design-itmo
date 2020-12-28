@@ -1,0 +1,42 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    padding: 2em;
+}
+
+li {
+    padding: 0.5em 0 0;
+}
+
+a, a:visited {
+    color: #44f;
+    text-decoration: none;
+}
+
+form {
+    display: inline;
+}
+
+input, button {
+    font: inherit;
+}
+
+.lists {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    grid-gap: 1em;
+    justify-content: space-evenly;
+}
+
+.list-tile {
+    border: 1px solid black;
+    padding: 1em;
+}
+
+h2 input {
+    max-width: 100%;
+    box-sizing: border-box;
+}
