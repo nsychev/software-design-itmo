@@ -1,5 +1,6 @@
 package ru.akirakozov.sd.refactoring.storage;
 
+import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -28,15 +29,25 @@ public class SqliteCursor implements AutoCloseable {
         statement.executeUpdate();
     }
 
-    public ResultSet executeQuery() throws SQLException {
+    public ResultSet executeQueryAll() throws SQLException {
         return statement.executeQuery();
     }
 
-    public <T> List<T> executeQuery(Function<ResultSet, T> constructor) throws SQLException {
+    public <T> T executeQueryOne(ResultConsumer<T> consumer) throws SQLException {
+        try (ResultSet rs = statement.executeQuery()) {
+            if (rs.next()) {
+                return consumer.apply(rs);
+            } else {
+                return null;
+            }
+        }
+    }
+
+    public <T> List<T> executeQueryAll(ResultConsumer<T> consumer) throws SQLException {
         try (ResultSet rs = statement.executeQuery()) {
             List<T> objects = new ArrayList<>();
             while (rs.next()) {
-                objects.add(constructor.apply(rs));
+                objects.add(consumer.apply(rs));
             }
             return objects;
         }

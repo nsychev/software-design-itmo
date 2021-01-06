@@ -1,30 +1,31 @@
 package ru.akirakozov.sd.refactoring.servlet;
 
-import ru.akirakozov.sd.refactoring.storage.Database;
-import ru.akirakozov.sd.refactoring.storage.SqliteCursor;
+import ru.akirakozov.sd.refactoring.dao.ProductDAO;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
+import java.sql.SQLException;
 
 /**
  * @author akirakozov
  */
 public class AddProductServlet extends HttpServlet {
+    private final ProductDAO productDAO;
+
+    public AddProductServlet(ProductDAO productDAO) {
+        this.productDAO = productDAO;
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String name = request.getParameter("name");
-        long price = Long.parseLong(request.getParameter("price"));
+        int price = Integer.parseInt(request.getParameter("price"));
 
-        try (SqliteCursor cursor = (new Database("test.db")).getCursor("INSERT INTO PRODUCT " +
-                "(NAME, PRICE) VALUES (\"" + name + "\"," + price + ")")) {
-            cursor.executeUpdate();
-        } catch (Exception e) {
+        try {
+            productDAO.insert(name, price);
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 

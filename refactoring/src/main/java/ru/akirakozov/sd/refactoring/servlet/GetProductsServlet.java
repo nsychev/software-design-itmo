@@ -1,39 +1,34 @@
 package ru.akirakozov.sd.refactoring.servlet;
 
-import ru.akirakozov.sd.refactoring.storage.Database;
-import ru.akirakozov.sd.refactoring.storage.SqliteCursor;
+import ru.akirakozov.sd.refactoring.dao.ProductDAO;
+import ru.akirakozov.sd.refactoring.model.Product;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  * @author akirakozov
  */
 public class GetProductsServlet extends HttpServlet {
+    private final ProductDAO productDAO;
+
+    public GetProductsServlet(ProductDAO productDAO) {
+        this.productDAO = productDAO;
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
-        Database database = new Database("test.db");
-        try (SqliteCursor cursor = database.getCursor("SELECT * FROM PRODUCT")) {
+        try {
             response.getWriter().println("<html><body>");
 
-            ResultSet rs = cursor.executeQuery();
-
-            while (rs.next()) {
-                String  name = rs.getString("name");
-                int price  = rs.getInt("price");
-                response.getWriter().println(name + "\t" + price + "</br>");
+            for (Product product: productDAO.fetchAll()) {
+                response.getWriter().println(product.getName() + "\t" + product.getPrice() + "</br>");
             }
-            response.getWriter().println("</body></html>");
 
-            rs.close();
+            response.getWriter().println("</body></html>");
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         }
