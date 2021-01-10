@@ -22,53 +22,41 @@ public class QueryServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String command = request.getParameter("command");
+        Product product;
 
-        if ("max".equals(command)) {
-            try {
-                Product product = productDAO.fetchMostExpensive();
+        try {
+            response.getWriter().println("<html><body>");
+            switch (command) {
+                case "max":
+                    product = productDAO.fetchMostExpensive();
 
-                response.getWriter().println("<html><body>");
-                response.getWriter().println("<h1>Product with max price: </h1>");
+                    response.getWriter().println("<h1>Product with max price: </h1>");
+                    if (product != null) {
+                        response.getWriter().println(product.toString() + "</br>");
+                    }
 
-                if (product != null) {
-                    response.getWriter().println(product.getName() + "\t" + product.getPrice() + "</br>");
-                }
-                response.getWriter().println("</body></html>");
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+                    break;
+                case "min":
+                    product = productDAO.fetchCheapest();
+
+                    if (product != null) {
+                        response.getWriter().println(product.getName() + "\t" + product.getPrice() + "</br>");
+                    }
+                    break;
+                case "sum":
+                    response.getWriter().println("Summary price: ");
+                    response.getWriter().println(productDAO.sumPrice());
+                    break;
+                case "count":
+                    response.getWriter().println("Number of products: ");
+                    response.getWriter().println(productDAO.count());
+                    break;
+                default:
+                    response.getWriter().println("Unknown command: " + command);
             }
-        } else if ("min".equals(command)) {
-            try {
-                Product product = productDAO.fetchCheapest();
-
-                if (product != null) {
-                    response.getWriter().println(product.getName() + "\t" + product.getPrice() + "</br>");
-                }
-                response.getWriter().println("</body></html>");
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        } else if ("sum".equals(command)) {
-            try {
-                response.getWriter().println("<html><body>");
-                response.getWriter().println("Summary price: ");
-                response.getWriter().println(productDAO.sumPrice());
-                response.getWriter().println("</body></html>");
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        } else if ("count".equals(command)) {
-            try {
-                response.getWriter().println("<html><body>");
-                response.getWriter().println("Number of products: ");
-                response.getWriter().println(productDAO.count());
-                response.getWriter().println("</body></html>");
-
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            response.getWriter().println("Unknown command: " + command);
+            response.getWriter().println("</body></html>");
+        } catch (SQLException exc) {
+            throw new RuntimeException(exc);
         }
 
         response.setContentType("text/html");
