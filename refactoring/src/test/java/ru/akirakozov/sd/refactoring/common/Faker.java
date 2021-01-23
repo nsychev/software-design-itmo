@@ -6,6 +6,10 @@ public class Faker {
     private static int counter = 0;
     private static final StringGenerator stringGenerator = new StringGenerator();
 
+    public static int getId() {
+        return counter++;
+    }
+
     public static int getPrice() {
         return counter++;
     }
